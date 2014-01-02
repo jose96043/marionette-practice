@@ -4,16 +4,32 @@ ContactManager.module("ContactsApp.List", function(List, ContactManager, Backbon
        template: "#contact-list-item",
        events:{
         "click": "highlightName",
+        "click td a.js-show" : "showClicked" ,
         "click button.js-delete" : "deleteClicked"
        },
 
         highlightName: function(e){
             this.$el.toggleClass("warning");
+            this.trigger("contact:highlightName", this.model);
+        },
+
+        showClicked: function(e){
+            e.preventDefault();
+            e.stopPropagation();
+            console.log("showClicked");
+            this.trigger("contact:show", this.model);
         },
 
         deleteClicked:function(e){
             e.stopPropagation();
             this.trigger("contact:delete", this.model);
+        },
+
+        remove: function(){
+            var self = this;
+            this.$el.fadeOut(function(){
+                Marionette.ItemView.prototype.remove.call(self);
+            });
         }
     });
 
@@ -22,7 +38,13 @@ ContactManager.module("ContactsApp.List", function(List, ContactManager, Backbon
         className: "table table-hover",
         template:"#contact-list",
         itemView: List.Contact,
-        itemViewContainer: "tbody"
+        itemViewContainer: "tbody",
+
+        onItemviewContactDelete: function(){
+            this.$el.fadeOut(1000, function(){
+                $(this).fadeIn(1000);
+            });
+        }
     });
 
 });
